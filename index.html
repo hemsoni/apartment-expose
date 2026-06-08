@@ -458,11 +458,12 @@
       footer { page-break-inside: avoid; break-inside: avoid; padding: 14px 28px; font-size: 10px; }
     }
   </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
 <!-- ══════ PDF BUTTON ══════ -->
-<button class="pdf-btn" onclick="window.print()" aria-label="Save as PDF">
+<button class="pdf-btn" onclick="generatePDF()" aria-label="Save as PDF">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
     <line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/>
@@ -1000,6 +1001,334 @@
       }
     });
   })();
+
+  /* ══════════════════════════════════════════
+     PDF GENERATOR  –  jsPDF programmatic export
+  ══════════════════════════════════════════ */
+  async function generatePDF() {
+    const btn = document.querySelector('.pdf-btn');
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> <span>Generating…</span>';
+    btn.disabled = true;
+
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc  = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      const W    = 210, H = 297;
+      const M    = 12;               // page margin
+      const GAP  = 3;                // gutter between photos
+      const GOLD = [201, 168, 76];
+      const DARK = [26,  26,  46];
+      const MID  = [45,  45,  68];
+      const WHITE= [255, 255, 255];
+      const GRAY = [160, 160, 170];
+      const TEXT = [51,  51,  68];
+      const LITE = [245, 242, 238];
+
+      /* ── helpers ── */
+      function setRGB(doc, r) { doc.setTextColor(r[0], r[1], r[2]); }
+
+      /** Load + crop-to-fill an image into a canvas dataURL */
+      async function loadImg(src, boxW_mm, boxH_mm, dpi = 120) {
+        const pw = Math.round(boxW_mm * dpi / 25.4);
+        const ph = Math.round(boxH_mm * dpi / 25.4);
+        return new Promise(resolve => {
+          const img = new Image();
+          img.onload = () => {
+            const ia = img.naturalWidth / img.naturalHeight;
+            const ba = pw / ph;
+            let sx, sy, sw, sh;
+            if (ia > ba) { sh = img.naturalHeight; sw = sh * ba; sx = (img.naturalWidth - sw) / 2; sy = 0; }
+            else         { sw = img.naturalWidth;  sh = sw / ba; sx = 0; sy = (img.naturalHeight - sh) / 2; }
+            const c = document.createElement('canvas');
+            c.width = pw; c.height = ph;
+            c.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, pw, ph);
+            resolve(c.toDataURL('image/jpeg', 0.82));
+          };
+          img.onerror = () => resolve(null);
+          img.src = src;
+        });
+      }
+
+      /** Draw a filled rounded rect (jsPDF has roundedRect but needs 'F') */
+      function fillBox(x, y, w, h, col, r = 1) {
+        doc.setFillColor(col[0], col[1], col[2]);
+        doc.roundedRect(x, y, w, h, r, r, 'F');
+      }
+
+      /** Photo page header */
+      function photoHeader(pageIdx, total) {
+        doc.setFillColor(DARK[0], DARK[1], DARK[2]);
+        doc.rect(0, 0, W, 13, 'F');
+        doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+        setRGB(doc, GOLD);
+        doc.text('FOTOGALERIE', M, 9, { charSpace: 2 });
+        doc.setFont('helvetica', 'normal'); setRGB(doc, WHITE);
+        doc.text('Werastraße 24 · 71088 Holzgerlingen', W - M, 9, { align: 'right' });
+        doc.setFontSize(7); setRGB(doc, GRAY);
+        doc.text(`${pageIdx} / ${total}`, W / 2, 9, { align: 'center' });
+      }
+
+      /** Collage layout: returns [{x,y,w,h}] for n photos on one page */
+      function collageLayout(n) {
+        const startY = 16, endY = H - M;
+        const aW = W - M * 2, aH = endY - startY;
+        const half = (aW - GAP) / 2;
+        const third = (aW - GAP * 2) / 3;
+        const row2  = (aH - GAP) / 2;
+        const row3  = (aH - GAP * 2) / 3;
+
+        if (n === 1) return [{ x: M, y: startY, w: aW, h: aH }];
+
+        if (n === 2) return [
+          { x: M,          y: startY,          w: aW,  h: row2 },
+          { x: M,          y: startY+row2+GAP, w: aW,  h: row2 },
+        ];
+
+        if (n === 3) return [
+          { x: M,          y: startY,           w: aW,   h: aH * 0.52 },
+          { x: M,          y: startY+aH*0.52+GAP, w: half, h: aH * 0.48 - GAP },
+          { x: M+half+GAP, y: startY+aH*0.52+GAP, w: half, h: aH * 0.48 - GAP },
+        ];
+
+        if (n === 4) return [
+          { x: M,          y: startY,          w: half, h: row2 },
+          { x: M+half+GAP, y: startY,          w: half, h: row2 },
+          { x: M,          y: startY+row2+GAP, w: half, h: row2 },
+          { x: M+half+GAP, y: startY+row2+GAP, w: half, h: row2 },
+        ];
+
+        if (n === 5) return [
+          { x: M,              y: startY,              w: half, h: row2 },
+          { x: M+half+GAP,     y: startY,              w: half, h: row2 },
+          { x: M,              y: startY+row2+GAP,     w: third,          h: row2 },
+          { x: M+third+GAP,    y: startY+row2+GAP,     w: third,          h: row2 },
+          { x: M+(third+GAP)*2,y: startY+row2+GAP,     w: third,          h: row2 },
+        ];
+
+        // 6: featured – one large on left, 2 stacked right, 3 across bottom
+        const bigW  = aW * 0.60;
+        const smW   = aW - bigW - GAP;
+        const bigH  = aH * 0.60;
+        const smH   = (bigH - GAP) / 2;
+        const botH  = aH - bigH - GAP;
+        const botW  = (aW - GAP * 2) / 3;
+        return [
+          { x: M,          y: startY,           w: bigW, h: bigH },          // large
+          { x: M+bigW+GAP, y: startY,           w: smW,  h: smH  },          // sm top-right
+          { x: M+bigW+GAP, y: startY+smH+GAP,  w: smW,  h: smH  },          // sm bot-right
+          { x: M,              y: startY+bigH+GAP, w: botW, h: botH },       // bottom 1
+          { x: M+botW+GAP,     y: startY+bigH+GAP, w: botW, h: botH },       // bottom 2
+          { x: M+(botW+GAP)*2, y: startY+bigH+GAP, w: botW, h: botH },       // bottom 3
+        ];
+      }
+
+      /* ════════════════════════════════════
+         PAGE 1 – COVER
+      ════════════════════════════════════ */
+      const coverData = await loadImg('Photos-3-001/IMG_6909(1).JPG', W, H, 96);
+      if (coverData) doc.addImage(coverData, 'JPEG', 0, 0, W, H, '', 'FAST');
+
+      // Dark gradient simulation
+      doc.setFillColor(DARK[0], DARK[1], DARK[2]);
+      for (let i = 0; i < 12; i++) {
+        doc.setGState(new doc.GState({ opacity: 0.05 + i * 0.055 }));
+        doc.rect(0, H - 135 + i * 9, W, 11, 'F');
+      }
+      doc.setGState(new doc.GState({ opacity: 1 }));
+      doc.setFillColor(DARK[0], DARK[1], DARK[2]);
+      doc.rect(0, H - 58, W, 58, 'F');
+
+      // Gold tag
+      doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); setRGB(doc, GOLD);
+      doc.text('PREMIUM FURNISHED APARTMENT  ·  EXPOSÉ', M, H - 44, { charSpace: 1.5 });
+
+      // Title
+      doc.setFontSize(23); doc.setFont('times', 'normal'); setRGB(doc, WHITE);
+      doc.text('Exklusiv möbliertes Apartment', M, H - 31);
+      doc.text('in ruhiger Familienlage', M, H - 18);
+
+      // Address
+      doc.setFontSize(9); doc.setFont('helvetica', 'normal'); setRGB(doc, GRAY);
+      doc.text('Werastraße 24  ·  71088 Holzgerlingen  ·  Baden-Württemberg', M, H - 7);
+
+      /* ════════════════════════════════════
+         PAGE 2 – PROPERTY DETAILS
+      ════════════════════════════════════ */
+      doc.addPage();
+
+      // Header
+      doc.setFillColor(DARK[0], DARK[1], DARK[2]);
+      doc.rect(0, 0, W, 16, 'F');
+      doc.setFontSize(12); doc.setFont('times', 'normal'); setRGB(doc, WHITE);
+      doc.text('Apartment Details', M, 11);
+      doc.setFontSize(8); doc.setFont('helvetica', 'normal'); setRGB(doc, GOLD);
+      doc.text('Werastraße 24  ·  71088 Holzgerlingen', W - M, 11, { align: 'right' });
+
+      // ── Stats row ──
+      const stats = [
+        ['85 m²','Wohnfläche'], ['3 Zimmer','Zimmer'], ['1. OG','Etage'],
+        ['2 Bäder','Badezimmer'], ['Terrasse','Privat'], ['6 Min','zum Bahnhof'],
+      ];
+      const statW = (W - M * 2 - GAP * 5) / 6;
+      let cy = 20;
+      stats.forEach(([val, lbl], i) => {
+        const x = M + i * (statW + GAP);
+        fillBox(x, cy, statW, 18, LITE);
+        doc.setFillColor(GOLD[0], GOLD[1], GOLD[2]);
+        doc.rect(x, cy, statW, 1.5, 'F');
+        doc.setFontSize(11); doc.setFont('helvetica', 'bold'); setRGB(doc, DARK);
+        doc.text(val, x + statW / 2, cy + 10, { align: 'center' });
+        doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); setRGB(doc, [100,100,120]);
+        doc.text(lbl.toUpperCase(), x + statW / 2, cy + 16, { align: 'center' });
+      });
+      cy += 24;
+
+      // ── Description ──
+      doc.setFillColor(GOLD[0], GOLD[1], GOLD[2]);
+      doc.rect(M, cy, 28, 0.6, 'F');
+      cy += 6;
+      doc.setFontSize(13); doc.setFont('times', 'normal'); setRGB(doc, DARK);
+      doc.text('Über die Wohnung', M, cy); cy += 7;
+
+      const descDE = 'Exklusiv möbliertes 3-Zimmer-Apartment (85 m²) im 1. Obergeschoss mit privater Terrasse in Holzgerlingen – ' +
+        'ruhige, familienfreundliche Lage im Herzen der Region Stuttgart/Böblingen. Sofort bezugsfertig.\n\n' +
+        'Hochwertige Einbauküche mit Bosch-Geräten, komplett mit allen Küchenutensilien ausgestattet. Beide Badezimmer ' +
+        'mit Walk-in-Dusche und Kommode mit Bidet. Samsung Waschmaschine und Bosch Trockner direkt im Badezimmer. ' +
+        'Höhenverstellbarer Schreibtisch, Tagesbett und Kinderbett vorhanden. 1000 Mbit/s Glasfaser-Internet inklusive.';
+      const descLines = doc.splitTextToSize(descDE, W - M * 2);
+      doc.setFontSize(8.5); doc.setFont('helvetica', 'normal'); setRGB(doc, TEXT);
+      doc.text(descLines, M, cy);
+      cy += descLines.length * 4.8 + 6;
+
+      // ── Included ──
+      doc.setFillColor(GOLD[0], GOLD[1], GOLD[2]);
+      doc.rect(M, cy, 28, 0.6, 'F');
+      cy += 6;
+      doc.setFontSize(13); doc.setFont('times', 'normal'); setRGB(doc, DARK);
+      doc.text('Inklusive', M, cy); cy += 7;
+
+      const includes = [
+        'Heizung *', 'Kalt-/Warmwasser *', 'Strom bis 200 kWh *',
+        '1000 Mbit/s Internet', 'Reinigung 1×/Monat', 'PKW-Stellplatz',
+        'Müllentsorgung', 'Hausverwaltung', 'Keller / Lager',
+        'Vollmöbliert', 'Alle Küchenutensilien', 'Keine Haustiere',
+      ];
+      const iColW = (W - M * 2 - GAP * 2) / 3;
+      includes.forEach((item, i) => {
+        const col = i % 3, row = Math.floor(i / 3);
+        const x = M + col * (iColW + GAP);
+        const y = cy + row * 7;
+        fillBox(x, y - 4.5, iColW, 6.5, LITE);
+        doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); setRGB(doc, GOLD);
+        doc.text('✓', x + 2, y);
+        doc.setFont('helvetica', 'normal'); setRGB(doc, TEXT);
+        doc.text(item, x + 7, y);
+      });
+      cy += Math.ceil(includes.length / 3) * 7 + 8;
+
+      // ── Location ──
+      doc.setFillColor(GOLD[0], GOLD[1], GOLD[2]);
+      doc.rect(M, cy, 28, 0.6, 'F');
+      cy += 6;
+      doc.setFontSize(13); doc.setFont('times', 'normal'); setRGB(doc, DARK);
+      doc.text('Lage & Anbindung', M, cy); cy += 7;
+
+      const addrW = (W - M * 2) * 0.44;
+      const distX = M + addrW + GAP * 2;
+      const distW = W - M - distX;
+      fillBox(M, cy, addrW, 48, DARK);
+      doc.setFillColor(GOLD[0], GOLD[1], GOLD[2]); doc.rect(M, cy, addrW, 1.5, 'F');
+      doc.setFontSize(6.5); doc.setFont('helvetica', 'bold'); setRGB(doc, GOLD);
+      doc.text('ADRESSE', M + 4, cy + 8, { charSpace: 2 });
+      doc.setFontSize(12); doc.setFont('times', 'normal'); setRGB(doc, WHITE);
+      doc.text('Werastraße 24', M + 4, cy + 18);
+      doc.setFontSize(8.5); doc.setFont('helvetica', 'normal'); setRGB(doc, GRAY);
+      doc.text('71088 Holzgerlingen', M + 4, cy + 27);
+      doc.text('Baden-Württemberg', M + 4, cy + 34);
+      doc.setFontSize(7); setRGB(doc, [80, 80, 100]);
+      doc.text('Miete & Verfügbarkeit auf Anfrage', M + 4, cy + 43);
+
+      const dists = [
+        ['Bahnhof Holzgerlingen (S-Bahn S65)', '~6 min Fußweg'],
+        ['Mercaden Böblingen', '~5 km / 8 min'],
+        ['Stuttgart Hauptbahnhof', '~30 min (S-Bahn)'],
+        ['Böblingen / Sindelfingen', '~10 min'],
+        ['Flughafen Stuttgart (STR)', '~20 min'],
+      ];
+      dists.forEach(([name, time], i) => {
+        const dy = cy + 2 + i * 9.4;
+        fillBox(distX, dy, distW, 8, i % 2 === 0 ? LITE : WHITE);
+        doc.setFontSize(8); doc.setFont('helvetica', 'normal'); setRGB(doc, TEXT);
+        doc.text(name, distX + 3, dy + 5.5);
+        doc.setFont('helvetica', 'bold'); setRGB(doc, GOLD);
+        doc.text(time, distX + distW - 3, dy + 5.5, { align: 'right' });
+      });
+      cy += 52;
+
+      // Footer note
+      doc.setFontSize(6.5); doc.setFont('helvetica', 'normal'); setRGB(doc, GRAY);
+      doc.text('* Im Rahmen angemessener Nutzung. Strom bis 200 kWh/Monat inklusive. Energieausweis auf Anfrage erhältlich. Keine Haustiere.', M, H - 8);
+
+      /* ════════════════════════════════════
+         PAGES 3+ – PHOTO COLLAGE
+      ════════════════════════════════════ */
+      const photoPaths = [
+        'Photos-3-001/IMG_6909(1).JPG','Photos-3-001/IMG_6910.JPG','Photos-3-001/IMG_6911(1).JPG',
+        'Photos-3-001/IMG_6913.JPG','Photos-3-001/IMG_6914.JPG','Photos-3-001/IMG_6915.JPG',
+        'Photos-3-001/IMG_6916.JPG','Photos-3-001/IMG_6917.JPG','Photos-3-001/IMG_6918.JPG',
+        'Photos-3-001/IMG_6919.JPG','Photos-3-001/IMG_6920.JPG','Photos-3-001/IMG_6921.JPG',
+        'Photos-3-001/IMG_6923.JPG','Photos-3-001/IMG_6924.JPG','Photos-3-001/IMG_6925.JPG',
+        'Photos-3-001/IMG_6928.JPG','Photos-3-001/IMG_6932.JPG','Photos-3-001/IMG_6933.JPG',
+        'Photos-3-001/IMG_6934.JPG','Photos-3-001/IMG_6935.JPG','Photos-3-001/IMG_6936.JPG',
+        'Photos-3-001/IMG_6937.JPG','Photos-3-001/IMG_6938.JPG','Photos-3-001/IMG_6939.JPG',
+        'Photos-3-001/IMG_6941.JPG','Photos-3-001/IMG_6942.JPG','Photos-3-001/IMG_6946.JPG',
+        'Photos-3-001/IMG_6947.JPG','Photos-3-001/IMG_6948.JPG','Photos-3-001/IMG_6949.JPG',
+        'Photos-3-001/IMG_6908.JPG',
+      ];
+
+      const PER_PAGE = 6;
+      const totalPhotoPages = Math.ceil(photoPaths.length / PER_PAGE);
+
+      for (let pg = 0; pg < totalPhotoPages; pg++) {
+        doc.addPage();
+        photoHeader(pg + 3, 2 + totalPhotoPages);
+
+        const batch  = photoPaths.slice(pg * PER_PAGE, (pg + 1) * PER_PAGE);
+        const layout = collageLayout(batch.length);
+
+        for (let i = 0; i < batch.length; i++) {
+          const { x, y, w, h } = layout[i];
+          // Update button progress
+          btn.querySelector('span').textContent =
+            `Loading ${pg * PER_PAGE + i + 1} / ${photoPaths.length}…`;
+
+          const data = await loadImg(batch[i], w, h, 110);
+          if (data) {
+            doc.addImage(data, 'JPEG', x, y, w, h, '', 'FAST');
+            // Thin white border between photos
+            doc.setDrawColor(255, 255, 255);
+            doc.setLineWidth(0.4);
+            doc.rect(x, y, w, h, 'S');
+          } else {
+            // Placeholder if image fails
+            fillBox(x, y, w, h, LITE);
+            doc.setFontSize(8); setRGB(doc, GRAY);
+            doc.text('—', x + w / 2, y + h / 2, { align: 'center' });
+          }
+        }
+      }
+
+      doc.save('Expose-Werastrasse-24-Holzgerlingen.pdf');
+
+    } catch (err) {
+      console.error('PDF error:', err);
+      alert('PDF could not be generated. Check console for details.');
+    } finally {
+      btn.innerHTML = origHTML;
+      btn.disabled  = false;
+    }
+  }
 </script>
 
 </body>
