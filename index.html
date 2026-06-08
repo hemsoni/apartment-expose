@@ -372,17 +372,90 @@
 
     /* ══════════ PRINT ══════════ */
     @media print {
-      @page       { margin: 14mm 14mm; size: A4; }
-      @page :first { margin: 0; }
-      body { font-size: 11pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .cover { height: 100vh; page-break-after: always; }
-      .highlights, .features-grid, .gallery-grid, .location-grid, .costs-band { page-break-inside: avoid; }
-      .section, .gallery { padding: 32px 40px; }
-      .gallery-grid { grid-template-columns: repeat(3,1fr); gap: 6px; }
-      .gallery-grid img { aspect-ratio: 4/3; transform: none !important; }
-      .contact-band, .contact-btn, .lang-toggle, .lightbox { display: none !important; }
+      @page         { margin: 12mm 14mm; size: A4 portrait; }
+      @page :first  { margin: 0; }
+
+      /* Kill all transitions and animations */
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+
+      body {
+        font-size: 9pt;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color: #222;
+      }
+
+      /* ── Hide web-only chrome ── */
+      .pdf-btn, .lang-toggle, .lightbox,
+      .contact-band, .town-panorama,
+      .cost-footnote, hr.sep { display: none !important; }
+
+      /* ── Restore scroll-fade elements ── */
       .scroll-fade { opacity: 1 !important; transform: none !important; }
-      footer { page-break-inside: avoid; }
+
+      /* ── Cover: exactly one full page ── */
+      .cover {
+        width: 100%; height: 100vh;
+        page-break-after: always; break-after: page;
+        min-height: unset;
+      }
+      .cover-content { padding: 28px 36px 36px; }
+      .cover-title   { font-size: 32px; }
+      .cover-subtitle { font-size: 13px; }
+      .badge { font-size: 11px; padding: 5px 11px; }
+
+      /* ── Compact all sections ── */
+      .section, .section-sm { padding: 14px 28px; }
+      .gallery { padding: 14px 28px; }
+      h2 { font-size: 16pt; margin-bottom: 10px; page-break-after: avoid; break-after: avoid; }
+      .section-label { font-size: 8px; margin-bottom: 5px; }
+      .divider { margin-bottom: 12px; }
+
+      /* ── Highlights strip: one row, no wrap ── */
+      .highlights .section { padding: 10px 28px; flex-wrap: nowrap; }
+      .hl-item { padding: 8px 6px; border-right-width: 1px; }
+      .hl-icon  { font-size: 18px; margin-bottom: 5px; }
+      .hl-value { font-size: 14px; }
+      .hl-label { font-size: 9px; }
+
+      /* ── Description ── */
+      .desc-grid { gap: 24px; }
+      .desc-text p { font-size: 9pt; margin-bottom: 8px; line-height: 1.5; }
+
+      /* ── Feature cards: 3 per row, page-break only on individual cards ── */
+      .features-grid { grid-template-columns: repeat(3,1fr); gap: 8px; }
+      .feature-card  { padding: 10px 12px; page-break-inside: avoid; break-inside: avoid; }
+      .fc-icon  { font-size: 16px; margin-bottom: 5px; }
+      .fc-title { font-size: 11px; }
+      .fc-desc  { font-size: 10px; }
+
+      /* ── Costs band: compact grid ── */
+      .costs-band .section { gap: 8px; padding: 12px 28px; }
+      .cost-item  { padding: 8px 4px; page-break-inside: avoid; break-inside: avoid; }
+      .cost-icon  { font-size: 20px; margin-bottom: 5px; }
+      .cost-label { font-size: 9px; }
+      .cost-value { font-size: 12px; }
+      .cost-note  { font-size: 9px; }
+
+      /* ── Gallery: 4 columns, let rows break naturally across pages ── */
+      .gallery-grid { grid-template-columns: repeat(4,1fr); gap: 4px; }
+      .gallery-grid img {
+        aspect-ratio: 4/3; object-fit: cover;
+        cursor: default !important; transform: none !important;
+        page-break-inside: avoid; break-inside: avoid;
+      }
+
+      /* ── Location ── */
+      .location-grid { gap: 24px; }
+      .location-address { padding: 20px 24px; }
+      .addr-main { font-size: 18px; }
+      .dist-item { padding: 8px 12px; page-break-inside: avoid; break-inside: avoid; }
+      .dist-text { font-size: 11px; }
+      .nearby-list li { font-size: 11px; padding: 7px 0; }
+      .map-btn { display: none; }
+
+      /* ── Footer ── */
+      footer { page-break-inside: avoid; break-inside: avoid; padding: 14px 28px; font-size: 10px; }
     }
   </style>
 </head>
