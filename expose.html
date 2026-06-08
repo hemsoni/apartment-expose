@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apartment Exposé – Werastr. 24, 71088 Holzgerlingen</title>
+  <style>
+    /* ── Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold:  #c9a84c;
+      --dark:  #1a1a2e;
+      --mid:   #2d2d44;
+      --light: #f5f2ee;
+      --white: #ffffff;
+      --text:  #333344;
+      --sub:   #666680;
+    }
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.65;
+    }
+
+    /* ── Language helpers ── */
+    .lang-en { display: none; }
+    body.en .lang-de { display: none; }
+    body.en span.lang-en  { display: inline; }
+    body.en div.lang-en   { display: block; }
+    body.en p.lang-en     { display: block; }
+    body.en li.lang-en    { display: list-item; }
+    body.en h1.lang-en,
+    body.en h2.lang-en    { display: block; }
+
+    /* ── Language toggle button ── */
+    .lang-toggle {
+      position: fixed;
+      top: 18px;
+      right: 22px;
+      z-index: 2000;
+      display: flex;
+      background: rgba(26,26,46,0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--gold);
+      border-radius: 3px;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .lang-toggle span {
+      padding: 8px 14px;
+      color: rgba(201,168,76,0.5);
+      transition: all 0.2s;
+    }
+    .lang-toggle span.active {
+      background: var(--gold);
+      color: var(--dark);
+      font-weight: bold;
+    }
+
+    /* ── Cover Page ── */
+    .cover {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 620px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .cover-img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+    }
+    .cover-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,10,26,0.88) 0%, rgba(10,10,26,0.18) 60%);
+    }
+    .cover-content {
+      position: relative; z-index: 2;
+      padding: 48px 56px 52px;
+      color: var(--white);
+    }
+    .cover-tag {
+      display: inline-block;
+      border: 1.5px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Arial', sans-serif;
+      font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 5px 14px; margin-bottom: 20px;
+    }
+    .cover-title {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: normal; letter-spacing: 1px;
+      line-height: 1.2; margin-bottom: 10px;
+    }
+    .cover-subtitle {
+      font-family: 'Arial', sans-serif;
+      font-size: 15px; color: rgba(255,255,255,0.75);
+      letter-spacing: 1.5px; margin-bottom: 28px;
+    }
+    .cover-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+    .badge {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: var(--white);
+      font-family: 'Arial', sans-serif;
+      font-size: 12px; padding: 6px 14px;
+      border-radius: 20px; backdrop-filter: blur(4px);
+    }
+    .badge.gold { background: var(--gold); border-color: var(--gold); color: var(--dark); font-weight: bold; }
+
+    /* ── Section wrappers ── */
+    .section    { padding: 56px 56px; max-width: 1100px; margin: 0 auto; }
+    .section-sm { padding: 40px 56px; max-width: 1100px; margin: 0 auto; }
+
+    /* ── Section headings ── */
+    .section-label {
+      font-family: 'Arial', sans-serif; font-size: 10px;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 8px;
+    }
+    h2 {
+      font-size: clamp(22px, 3.5vw, 32px);
+      font-weight: normal; color: var(--dark);
+      margin-bottom: 20px; line-height: 1.25;
+    }
+    .divider { width: 48px; height: 2px; background: var(--gold); margin-bottom: 24px; }
+
+    /* ── Highlights strip ── */
+    .highlights { background: var(--dark); color: var(--white); }
+    .highlights .section { display: flex; flex-wrap: wrap; gap: 0; padding-top: 44px; padding-bottom: 44px; }
+    .hl-item { flex: 1 1 160px; text-align: center; padding: 20px 16px; border-right: 1px solid rgba(255,255,255,0.1); }
+    .hl-item:last-child { border-right: none; }
+    .hl-icon  { font-size: 28px; margin-bottom: 10px; }
+    .hl-value { font-size: 22px; font-weight: bold; color: var(--gold); font-family: 'Arial', sans-serif; }
+    .hl-label { font-family: 'Arial', sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+    /* ── Description ── */
+    .desc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .desc-text p { margin-bottom: 16px; color: var(--text); font-size: 16px; }
+    .desc-text p:last-child { margin-bottom: 0; }
+
+    /* ── Features ── */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 8px; }
+    .feature-card { background: var(--light); border-left: 3px solid var(--gold); padding: 18px 20px; border-radius: 2px; }
+    .feature-card .fc-icon  { font-size: 20px; margin-bottom: 8px; }
+    .feature-card .fc-title { font-family: 'Arial', sans-serif; font-weight: bold; font-size: 14px; color: var(--dark); margin-bottom: 4px; }
+    .feature-card .fc-desc  { font-size: 13.5px; color: var(--sub); }
+
+    /* ── Included items ── */
+    .included-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 8px; }
+    .inc-item { display: flex; align-items: center; gap: 12px; background: var(--white); border: 1px solid #e5e0d8; padding: 14px 16px; border-radius: 4px; }
+    .inc-icon { font-size: 22px; flex-shrink: 0; }
+    .inc-text { font-family: 'Arial', sans-serif; font-size: 13px; color: var(--text); line-height: 1.4; }
+    .inc-text strong { display: block; font-size: 13.5px; color: var(--dark); }
+
+    /* ── Costs band ── */
+    .costs-band { background: linear-gradient(135deg, var(--dark) 0%, var(--mid) 100%); color: var(--white); }
+    .costs-band .section { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px; }
+    .cost-item  { text-align: center; padding: 20px 10px; }
+    .cost-icon  { font-size: 32px; margin-bottom: 10px; }
+    .cost-label { font-family: 'Arial', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+    .cost-value { font-size: 15px; color: var(--gold); font-family: 'Arial', sans-serif; }
+    .cost-note  { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 3px; }
+
+    /* ── Gallery ── */
+    .gallery { padding: 56px 56px; max-width: 1100px; margin: 0 auto; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+    .gallery-grid img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover;
+      display: block; border-radius: 2px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .gallery-grid img:hover { opacity: 0.88; transform: scale(1.01); }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      display: none;
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.93);
+      align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+    .lightbox.open { display: flex; }
+    .lb-img-wrap {
+      position: relative;
+      max-width: 92vw; max-height: 85vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #lb-img {
+      max-width: 92vw; max-height: 82vh;
+      object-fit: contain;
+      border-radius: 2px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.7);
+      display: block;
+    }
+    .lb-close {
+      position: fixed; top: 18px; right: 22px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff; font-size: 20px;
+      width: 44px; height: 44px;
+      border-radius: 50%; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+      z-index: 10000;
+    }
+    .lb-close:hover { background: rgba(255,255,255,0.25); }
+    .lb-nav {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; font-size: 28px;
+      width: 52px; height: 72px;
+      border-radius: 4px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+      z-index: 10000; user-select: none;
+    }
+    .lb-nav:hover { background: rgba(201,168,76,0.35); }
+    .lb-prev { left: 16px; }
+    .lb-next { right: 16px; }
+    .lb-counter {
+      margin-top: 14px;
+      font-family: 'Arial', sans-serif; font-size: 13px;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 2px;
+    }
+    .lb-caption {
+      font-family: 'Arial', sans-serif; font-size: 12px;
+      color: rgba(255,255,255,0.4); margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    /* ── Location ── */
+    .location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .location-address { background: var(--dark); color: var(--white); padding: 32px 36px; border-radius: 4px; }
+    .location-address .addr-tag  { color: var(--gold); font-family: 'Arial', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; }
+    .location-address .addr-main { font-size: 26px; margin-bottom: 4px; }
+    .location-address .addr-city { font-family: 'Arial', sans-serif; font-size: 14px; color: rgba(255,255,255,0.65); margin-bottom: 24px; }
+    .location-distance { display: flex; flex-direction: column; gap: 12px; }
+    .dist-item { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.07); padding: 12px 16px; border-radius: 3px; }
+    .dist-icon { font-size: 18px; }
+    .dist-text { font-family: 'Arial', sans-serif; font-size: 13px; color: rgba(255,255,255,0.85); }
+    .dist-time { margin-left: auto; color: var(--gold); font-family: 'Arial', sans-serif; font-size: 12px; font-weight: bold; }
+
+    .nearby-list { list-style: none; }
+    .nearby-list li { padding: 10px 0; border-bottom: 1px solid #e8e4de; font-family: 'Arial', sans-serif; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+    .nearby-list li:last-child { border-bottom: none; }
+    .nearby-list li::before { content: '✓'; color: var(--gold); font-weight: bold; }
+
+    /* ── Contact ── */
+    .contact-band { background: var(--gold); }
+    .contact-band .section { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; padding-top: 40px; padding-bottom: 40px; }
+    .contact-band h2 { color: var(--dark); margin-bottom: 6px; }
+    .contact-band p  { color: rgba(0,0,0,0.65); font-family: 'Arial', sans-serif; font-size: 14px; }
+    .contact-btn { background: var(--dark); color: var(--white); font-family: 'Arial', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; padding: 14px 36px; border: none; border-radius: 2px; cursor: pointer; white-space: nowrap; }
+
+    /* ── Footer ── */
+    footer { background: var(--dark); color: rgba(255,255,255,0.45); font-family: 'Arial', sans-serif; font-size: 12px; text-align: center; padding: 24px 40px; line-height: 1.8; }
+
+    /* ── Separator ── */
+    .sep { border: none; border-top: 1px solid #e8e4de; max-width: 1100px; margin: 0 auto; }
+
+    /* ══════════ PRINT ══════════ */
+    @media print {
+      @page       { margin: 14mm 14mm; size: A4; }
+      @page :first { margin: 0; }
+      body { font-size: 11pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .cover { height: 100vh; page-break-after: always; }
+      .highlights, .features-grid, .gallery-grid, .location-grid, .costs-band { page-break-inside: avoid; }
+      .section, .gallery { padding: 32px 40px; }
+      .gallery-grid { grid-template-columns: repeat(3,1fr); gap: 6px; }
+      .gallery-grid img { aspect-ratio: 4/3; transform: none !important; }
+      .contact-band, .contact-btn, .lang-toggle, .lightbox { display: none !important; }
+      footer { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════ LANGUAGE TOGGLE ══════ -->
+<button class="lang-toggle" onclick="toggleLang()" aria-label="Switch language">
+  <span id="btn-de" class="active">DE</span>
+  <span id="btn-en">EN</span>
+</button>
+
+<!-- ══════ LIGHTBOX ══════ -->
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true">
+  <button class="lb-close" onclick="closeLightbox()" title="Close (Esc)">✕</button>
+  <button class="lb-nav lb-prev" onclick="navigate(-1)" title="Previous (←)">&#8592;</button>
+  <button class="lb-nav lb-next" onclick="navigate(1)"  title="Next (→)">&#8594;</button>
+  <div class="lb-img-wrap">
+    <img id="lb-img" src="" alt="" />
+  </div>
+  <div class="lb-counter"><span id="lb-cur">1</span> / <span id="lb-total">31</span></div>
+  <div class="lb-caption" id="lb-caption"></div>
+</div>
+
+<!-- ══════════ COVER ══════════ -->
+<div class="cover">
+  <img class="cover-img" src="Photos-3-001/IMG_6909(1).JPG" alt="Apartment – Werastr 24 Holzgerlingen" />
+  <div class="cover-overlay"></div>
+  <div class="cover-content">
+    <div class="cover-tag">Premium Furnished Apartment · Exposé</div>
+    <h1 class="cover-title lang-de">Exklusiv möbliertes Apartment<br/>in ruhiger Familienlage</h1>
+    <h1 class="cover-title lang-en">Exclusively Furnished Apartment<br/>in a Quiet Family Neighbourhood</h1>
+    <p class="cover-subtitle">Werastraße 24 &nbsp;·&nbsp; 71088 Holzgerlingen &nbsp;·&nbsp; Baden-Württemberg</p>
+    <div class="cover-badges">
+      <span class="badge gold"><span class="lang-de">Vollmöbliert</span><span class="lang-en">Fully Furnished</span></span>
+      <span class="badge"><span class="lang-de">Einbauküche – Bosch</span><span class="lang-en">Built-in Kitchen – Bosch</span></span>
+      <span class="badge"><span class="lang-de">2 Bäder</span><span class="lang-en">2 Bathrooms</span></span>
+      <span class="badge">1000 Mbit/s Internet</span>
+      <span class="badge"><span class="lang-de">PKW-Stellplatz</span><span class="lang-en">Car Parking</span></span>
+      <span class="badge"><span class="lang-de">6 Min. zum Bahnhof</span><span class="lang-en">6 min to Train Station</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HIGHLIGHTS ══════════ -->
+<div class="highlights">
+  <div class="section">
+    <div class="hl-item">
+      <div class="hl-icon">🛏️</div>
+      <div class="hl-value"><span class="lang-de">Möbliert</span><span class="lang-en">Furnished</span></div>
+      <div class="hl-label"><span class="lang-de">Vollmöbliert</span><span class="lang-en">Fully Furnished</span></div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-icon">🚿</div>
+      <div class="hl-value">2</div>
+      <div class="hl-label"><span class="lang-de">Badezimmer</span><span class="lang-en">Bathrooms</span></div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-icon">🌐</div>
+      <div class="hl-value">1000<span style="font-size:14px">Mbit</span></div>
+      <div class="hl-label"><span class="lang-de">Internet (inkl.)</span><span class="lang-en">Internet (incl.)</span></div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-icon">🚉</div>
+      <div class="hl-value">6 Min</div>
+      <div class="hl-label"><span class="lang-de">zum Bahnhof</span><span class="lang-en">to Train Station</span></div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-icon">🛒</div>
+      <div class="hl-value">5 km</div>
+      <div class="hl-label">Mercaden Böblingen</div>
+    </div>
+    <div class="hl-item">
+      <div class="hl-icon">🅿️</div>
+      <div class="hl-value"><span class="lang-de">Inkl.</span><span class="lang-en">Incl.</span></div>
+      <div class="hl-label"><span class="lang-de">PKW-Stellplatz</span><span class="lang-en">Car Parking</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ DESCRIPTION ══════════ -->
+<div class="section">
+  <p class="section-label"><span class="lang-de">Über die Wohnung</span><span class="lang-en">About the Apartment</span></p>
+  <h2 class="lang-de">Modernes, vollmöbliertes Apartment mit Premium-Ausstattung</h2>
+  <h2 class="lang-en">Modern, Fully Furnished Apartment with Premium Features</h2>
+  <div class="divider"></div>
+  <div class="desc-grid">
+
+    <!-- Left column -->
+    <div class="desc-text lang-de">
+      <p>Willkommen in diesem exklusiv ausgestatteten, voll möblierten Apartment in Holzgerlingen –
+        einer ruhigen, familienfreundlichen Gemeinde im Herzen der Region Stuttgart/Böblingen.
+        Die Wohnung vereint modernes Design mit maximalem Wohnkomfort und ist sofort bezugsfertig.</p>
+      <p>Die hochwertige Einbauküche mit <strong>Bosch-Geräten</strong> lädt zum Kochen ein und
+        ist komplett mit allen Küchenutensilien ausgestattet – vom ersten Tag an können Sie sich
+        wie zu Hause fühlen. Das elegante Küchendesign setzt einen stilvollen Akzent im Wohnbereich.</p>
+      <p>Beide modernen Badezimmer verfügen jeweils über eine großzügige <strong>Walk-in-Dusche</strong>
+        sowie eine Kommode mit integriertem <strong>Bidet</strong>.
+        Besonders praktisch: <strong>Bosch-Trockner</strong> und <strong>Samsung-Waschmaschine</strong>
+        befinden sich direkt im Badezimmer – kein lästiger Gang in den Keller.</p>
+    </div>
+    <div class="desc-text lang-en">
+      <p>Welcome to this exclusively equipped, fully furnished apartment in Holzgerlingen –
+        a peaceful, family-friendly community in the heart of the Stuttgart/Böblingen region.
+        The apartment combines modern design with maximum comfort and is ready to move in immediately.</p>
+      <p>The high-quality built-in kitchen with <strong>Bosch appliances</strong> is a joy to cook in and
+        comes fully equipped with all kitchen utensils – from day one you can feel right at home.
+        The elegant kitchen design adds a stylish focal point to the living area.</p>
+      <p>Both modern bathrooms feature a spacious <strong>walk-in shower</strong>
+        as well as a commode with integrated <strong>bidet</strong>.
+        Especially convenient: the <strong>Bosch dryer</strong> and <strong>Samsung washing machine</strong>
+        are located right in the bathroom – no trips to the basement required.</p>
+    </div>
+
+    <!-- Right column -->
+    <div class="desc-text lang-de">
+      <p>Das Arbeitszimmer ist mit einem <strong>höhenverstellbaren Schreibtisch</strong> ausgestattet –
+        ideal für Remote-Work und ergonomisches Arbeiten von zu Hause. Zusätzlich stehen ein
+        bequemes <strong>Tagesbett</strong> sowie ein <strong>Kinderbett</strong> zur Verfügung.</p>
+      <p>Die Lage ist ideal: nur <strong>6 Gehminuten</strong> vom Bahnhof Holzgerlingen entfernt,
+        mit direkter S-Bahn-Verbindung nach Böblingen, Sindelfingen und Stuttgart. Das Einkaufszentrum
+        Mercaden Böblingen ist in ca. <strong>5 km</strong> gut erreichbar.</p>
+      <p>Ein eigener <strong>PKW-Stellplatz</strong> ist im Mietpreis inklusive. Die Gemeinde
+        Holzgerlingen bietet ein ausgezeichnetes Infrastrukturangebot mit Schulen, Kindergärten,
+        Supermärkten und Grünflächen – perfekt für Familien und Berufspendler.</p>
+    </div>
+    <div class="desc-text lang-en">
+      <p>The study comes equipped with a <strong>height-adjustable desk</strong> –
+        ideal for remote work and ergonomic home office use. Also available are a comfortable
+        <strong>daybed</strong> and a <strong>children's bed</strong>.</p>
+      <p>The location is superb: just <strong>6 minutes on foot</strong> from Holzgerlingen station,
+        with direct S-Bahn connections to Böblingen, Sindelfingen and Stuttgart. The Mercaden
+        Böblingen shopping centre is easily reachable in approximately <strong>5 km</strong>.</p>
+      <p>A dedicated <strong>car parking space</strong> is included in the rent. The town of
+        Holzgerlingen offers excellent infrastructure including schools, kindergartens,
+        supermarkets and green spaces – perfect for families and commuters.</p>
+    </div>
+
+  </div>
+</div>
+
+<hr class="sep" />
+
+<!-- ══════════ FEATURES ══════════ -->
+<div class="section">
+  <p class="section-label"><span class="lang-de">Ausstattung &amp; Highlights</span><span class="lang-en">Features &amp; Highlights</span></p>
+  <h2 class="lang-de">Was diese Wohnung besonders macht</h2>
+  <h2 class="lang-en">What Makes This Apartment Special</h2>
+  <div class="divider"></div>
+  <div class="features-grid">
+
+    <div class="feature-card">
+      <div class="fc-icon">🍳</div>
+      <div class="fc-title"><span class="lang-de">Elegante Einbauküche – Bosch</span><span class="lang-en">Elegant Built-in Kitchen – Bosch</span></div>
+      <div class="fc-desc lang-de">Hochwertige Bosch-Geräte, vollständig ausgestattet mit allen Küchenutensilien. Edles Design, direkt einsatzbereit.</div>
+      <div class="fc-desc lang-en">Premium Bosch appliances, fully stocked with all kitchen utensils. Elegant design, ready to use from day one.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="fc-icon">🚿</div>
+      <div class="fc-title"><span class="lang-de">Walk-in-Dusche &amp; Bidet</span><span class="lang-en">Walk-in Shower &amp; Bidet</span></div>
+      <div class="fc-desc lang-de">Beide Badezimmer mit Walk-in-Dusche und Kommode mit integriertem Bidet – hoher Komfort auf ganzer Linie.</div>
+      <div class="fc-desc lang-en">Both bathrooms feature a walk-in shower and a commode with integrated bidet – premium comfort throughout.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="fc-icon">👕</div>
+      <div class="fc-title"><span class="lang-de">Waschmaschine &amp; Trockner im Bad</span><span class="lang-en">Washer &amp; Dryer In-Bathroom</span></div>
+      <div class="fc-desc lang-de">Samsung Waschmaschine und Bosch Trockner direkt im Badezimmer – kein Kellergang nötig. Maximaler Komfort.</div>
+      <div class="fc-desc lang-en">Samsung washing machine and Bosch dryer right in the bathroom – no basement trips needed. Maximum convenience.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="fc-icon">💼</div>
+      <div class="fc-title"><span class="lang-de">Höhenverstellbarer Schreibtisch</span><span class="lang-en">Height-Adjustable Desk</span></div>
+      <div class="fc-desc lang-de">Ergonomischer, elektrisch höhenverstellbarer Arbeitstisch – ideal für modernes Home Office.</div>
+      <div class="fc-desc lang-en">Ergonomic, electrically height-adjustable work desk – ideal for a modern home office setup.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="fc-icon">🛋️</div>
+      <div class="fc-title"><span class="lang-de">Tagesbett &amp; Kinderbett</span><span class="lang-en">Daybed &amp; Children's Bed</span></div>
+      <div class="fc-desc lang-de">Komfortables Tagesbett für Gäste sowie ein Kinderbett – die Wohnung bietet Platz für die ganze Familie.</div>
+      <div class="fc-desc lang-en">A comfortable daybed for guests and a children's bed – the apartment has room for the whole family.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="fc-icon">⚡</div>
+      <div class="fc-title"><span class="lang-de">1000 Mbit/s Glasfaser-Internet</span><span class="lang-en">1000 Mbit/s Fibre Internet</span></div>
+      <div class="fc-desc lang-de">Blitzschnelles Glasfaser-Internet bereits inklusive. Perfekt für Streaming, Video-Calls und Remote-Work.</div>
+      <div class="fc-desc lang-en">Lightning-fast fibre internet already included. Perfect for streaming, video calls and remote work.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="fc-icon">🧹</div>
+      <div class="fc-title"><span class="lang-de">Monatliche Reinigung inklusive</span><span class="lang-en">Monthly Cleaning Included</span></div>
+      <div class="fc-desc lang-de">Einmal monatlich professionelle Reinigung – Terminvereinbarung flexibel nach Mieterwunsch.</div>
+      <div class="fc-desc lang-en">Professional cleaning once a month – appointment scheduled flexibly at the tenant's convenience.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="fc-icon">🅿️</div>
+      <div class="fc-title"><span class="lang-de">PKW-Stellplatz inklusive</span><span class="lang-en">Car Parking Included</span></div>
+      <div class="fc-desc lang-de">Ein fester Parkplatz direkt am Haus ist im Mietpreis enthalten – kein Stress mit der Parkplatzsuche.</div>
+      <div class="fc-desc lang-en">One dedicated parking space right at the building is included in the rent – no parking hassle.</div>
+    </div>
+
+    <div class="feature-card">
+      <div class="fc-icon">🏘️</div>
+      <div class="fc-title"><span class="lang-de">Ruhige Familienlage</span><span class="lang-en">Quiet Family Neighbourhood</span></div>
+      <div class="fc-desc lang-de">Modernes Wohnhaus in ruhiger, familienfreundlicher Nachbarschaft. Grüne Umgebung, gute Gemeinschaft.</div>
+      <div class="fc-desc lang-en">Modern residential building in a quiet, family-friendly neighbourhood. Green surroundings, great community.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ COSTS BAND ══════════ -->
+<div class="costs-band">
+  <div class="section">
+    <div class="cost-item">
+      <div class="cost-icon">🔥</div>
+      <div class="cost-label"><span class="lang-de">Heizung</span><span class="lang-en">Heating</span></div>
+      <div class="cost-value"><span class="lang-de">Inklusive</span><span class="lang-en">Included</span></div>
+      <div class="cost-note"><span class="lang-de">Zentralheizung</span><span class="lang-en">Central heating</span></div>
+    </div>
+    <div class="cost-item">
+      <div class="cost-icon">💧</div>
+      <div class="cost-label"><span class="lang-de">Kalt- &amp; Warmwasser</span><span class="lang-en">Cold &amp; Hot Water</span></div>
+      <div class="cost-value"><span class="lang-de">Inklusive</span><span class="lang-en">Included</span></div>
+      <div class="cost-note"><span class="lang-de">Unbegrenzt</span><span class="lang-en">Unlimited</span></div>
+    </div>
+    <div class="cost-item">
+      <div class="cost-icon">💡</div>
+      <div class="cost-label"><span class="lang-de">Strom</span><span class="lang-en">Electricity</span></div>
+      <div class="cost-value">200 kWh/<span class="lang-de">Monat</span><span class="lang-en">month</span></div>
+      <div class="cost-note"><span class="lang-de">Inklusive (Kontingent)</span><span class="lang-en">Included (allowance)</span></div>
+    </div>
+    <div class="cost-item">
+      <div class="cost-icon">🌐</div>
+      <div class="cost-label">Internet</div>
+      <div class="cost-value">1000 Mbit/s</div>
+      <div class="cost-note"><span class="lang-de">Glasfaser inklusive</span><span class="lang-en">Fibre included</span></div>
+    </div>
+    <div class="cost-item">
+      <div class="cost-icon">🧹</div>
+      <div class="cost-label"><span class="lang-de">Reinigung</span><span class="lang-en">Cleaning</span></div>
+      <div class="cost-value">1× / <span class="lang-de">Monat</span><span class="lang-en">month</span></div>
+      <div class="cost-note"><span class="lang-de">Flexible Terminwahl</span><span class="lang-en">Flexible scheduling</span></div>
+    </div>
+    <div class="cost-item">
+      <div class="cost-icon">🅿️</div>
+      <div class="cost-label"><span class="lang-de">Stellplatz</span><span class="lang-en">Parking</span></div>
+      <div class="cost-value"><span class="lang-de">Inklusive</span><span class="lang-en">Included</span></div>
+      <div class="cost-note"><span class="lang-de">1 PKW-Platz</span><span class="lang-en">1 car space</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ GALLERY ══════════ -->
+<div class="gallery">
+  <p class="section-label"><span class="lang-de">Fotogalerie</span><span class="lang-en">Photo Gallery</span></p>
+  <h2 class="lang-de">Einblick in Ihr neues Zuhause</h2>
+  <h2 class="lang-en">A Glimpse of Your New Home</h2>
+  <div class="divider"></div>
+  <div class="gallery-grid" id="galleryGrid">
+    <img src="Photos-3-001/IMG_6909(1).JPG" alt="Außenansicht / Exterior" />
+    <img src="Photos-3-001/IMG_6910.JPG"    alt="Wohnbereich / Living area" />
+    <img src="Photos-3-001/IMG_6911(1).JPG" alt="Küche / Kitchen" />
+    <img src="Photos-3-001/IMG_6913.JPG"    alt="Küche Detail / Kitchen detail" />
+    <img src="Photos-3-001/IMG_6914.JPG"    alt="Wohnzimmer / Living room" />
+    <img src="Photos-3-001/IMG_6915.JPG"    alt="Essbereich / Dining area" />
+    <img src="Photos-3-001/IMG_6916.JPG"    alt="Schlafzimmer / Bedroom" />
+    <img src="Photos-3-001/IMG_6917.JPG"    alt="Badezimmer / Bathroom" />
+    <img src="Photos-3-001/IMG_6918.JPG"    alt="Bad 2 / Bathroom 2" />
+    <img src="Photos-3-001/IMG_6919.JPG"    alt="Dusche / Shower" />
+    <img src="Photos-3-001/IMG_6920.JPG"    alt="Arbeitszimmer / Study" />
+    <img src="Photos-3-001/IMG_6921.JPG"    alt="Schreibtisch / Desk" />
+    <img src="Photos-3-001/IMG_6923.JPG"    alt="Kinderbett / Children's bed" />
+    <img src="Photos-3-001/IMG_6924.JPG"    alt="Tagesbett / Daybed" />
+    <img src="Photos-3-001/IMG_6925.JPG"    alt="Flur / Hallway" />
+    <img src="Photos-3-001/IMG_6928.JPG"    alt="Detail" />
+    <img src="Photos-3-001/IMG_6932.JPG"    alt="Wohnraum / Room" />
+    <img src="Photos-3-001/IMG_6933.JPG"    alt="Küchengeräte / Kitchen appliances" />
+    <img src="Photos-3-001/IMG_6934.JPG"    alt="Waschmaschine / Washing machine" />
+    <img src="Photos-3-001/IMG_6935.JPG"    alt="Trockner / Dryer" />
+    <img src="Photos-3-001/IMG_6936.JPG"    alt="Badezimmer / Bathroom" />
+    <img src="Photos-3-001/IMG_6937.JPG"    alt="Eingang / Entrance" />
+    <img src="Photos-3-001/IMG_6938.JPG"    alt="Ausblick / View" />
+    <img src="Photos-3-001/IMG_6939.JPG"    alt="Detail 2" />
+    <img src="Photos-3-001/IMG_6941.JPG"    alt="Zimmer / Room" />
+    <img src="Photos-3-001/IMG_6942.JPG"    alt="Licht / Light" />
+    <img src="Photos-3-001/IMG_6946.JPG"    alt="Fenster / Window" />
+    <img src="Photos-3-001/IMG_6947.JPG"    alt="Aussicht / Outlook" />
+    <img src="Photos-3-001/IMG_6948.JPG"    alt="Außenbereich / Outdoor area" />
+    <img src="Photos-3-001/IMG_6949.JPG"    alt="Umgebung / Surroundings" />
+    <img src="Photos-3-001/IMG_6908.JPG"    alt="Haus / House" />
+  </div>
+</div>
+
+<hr class="sep" />
+
+<!-- ══════════ LOCATION ══════════ -->
+<div class="section">
+  <p class="section-label"><span class="lang-de">Lage &amp; Umgebung</span><span class="lang-en">Location &amp; Surroundings</span></p>
+  <h2 class="lang-de">Beste Infrastruktur in familienfreundlicher Umgebung</h2>
+  <h2 class="lang-en">Excellent Infrastructure in a Family-Friendly Area</h2>
+  <div class="divider"></div>
+  <div class="location-grid">
+    <div>
+      <div class="location-address">
+        <div class="addr-tag"><span class="lang-de">Adresse</span><span class="lang-en">Address</span></div>
+        <div class="addr-main">Werastraße 24</div>
+        <div class="addr-city">71088 Holzgerlingen · Baden-Württemberg</div>
+        <div class="location-distance">
+          <div class="dist-item">
+            <span class="dist-icon">🚉</span>
+            <span class="dist-text"><span class="lang-de">Bahnhof Holzgerlingen (S-Bahn S65)</span><span class="lang-en">Holzgerlingen Station (S-Bahn S65)</span></span>
+            <span class="dist-time"><span class="lang-de">~6 min Fußweg</span><span class="lang-en">~6 min walk</span></span>
+          </div>
+          <div class="dist-item">
+            <span class="dist-icon">🛒</span>
+            <span class="dist-text"><span class="lang-de">Mercaden Böblingen (Einkaufszentrum)</span><span class="lang-en">Mercaden Böblingen (Shopping Centre)</span></span>
+            <span class="dist-time">~5 km / 8 min</span>
+          </div>
+          <div class="dist-item">
+            <span class="dist-icon">🏙️</span>
+            <span class="dist-text"><span class="lang-de">Stuttgart Hauptbahnhof (S-Bahn)</span><span class="lang-en">Stuttgart Central Station (S-Bahn)</span></span>
+            <span class="dist-time">~30 min</span>
+          </div>
+          <div class="dist-item">
+            <span class="dist-icon">🏢</span>
+            <span class="dist-text"><span class="lang-de">Böblingen / Sindelfingen (Mercedes, Bosch)</span><span class="lang-en">Böblingen / Sindelfingen (Mercedes, Bosch)</span></span>
+            <span class="dist-time">~10 min</span>
+          </div>
+          <div class="dist-item">
+            <span class="dist-icon">✈️</span>
+            <span class="dist-text"><span class="lang-de">Flughafen Stuttgart (STR)</span><span class="lang-en">Stuttgart Airport (STR)</span></span>
+            <span class="dist-time">~20 min</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="lang-de" style="font-size:15px; margin-bottom:20px; color:var(--sub);">
+        Holzgerlingen ist eine lebendige Gemeinde im Landkreis Böblingen und punktet mit hervorragender
+        Anbindung, einer intakten Infrastruktur und einer angenehmen Wohnatmosphäre.
+      </p>
+      <p class="lang-en" style="font-size:15px; margin-bottom:20px; color:var(--sub);">
+        Holzgerlingen is a vibrant community in the Böblingen district, renowned for its excellent
+        transport links, intact local infrastructure and a pleasant residential atmosphere.
+      </p>
+      <ul class="nearby-list lang-de">
+        <li>Direkter S-Bahn-Anschluss (S65) Richtung Böblingen &amp; Stuttgart</li>
+        <li>Supermärkte (REWE, Lidl, Aldi) in unmittelbarer Nähe</li>
+        <li>Kindergärten und Grundschulen fußläufig erreichbar</li>
+        <li>Ärzte, Apotheken und Dienstleister im Ort</li>
+        <li>Naturnähe – Spazierwege &amp; Fahrradwege vor der Haustür</li>
+        <li>Nachbarschaft zu Mercedes-Benz, Bosch &amp; Porsche Standorten</li>
+        <li>Böblingen Krankenhaus ca. 8 km entfernt</li>
+        <li>Ruhige Wohnstraße – perfekt für Familien</li>
+      </ul>
+      <ul class="nearby-list lang-en">
+        <li>Direct S-Bahn connection (S65) towards Böblingen &amp; Stuttgart</li>
+        <li>Supermarkets (REWE, Lidl, Aldi) within easy reach</li>
+        <li>Kindergartens and primary schools within walking distance</li>
+        <li>Doctors, pharmacies and local services in town</li>
+        <li>Nature on the doorstep – walking and cycling paths nearby</li>
+        <li>Close to Mercedes-Benz, Bosch &amp; Porsche sites</li>
+        <li>Böblingen Hospital approx. 8 km away</li>
+        <li>Quiet residential street – perfect for families</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ INCLUDED OVERVIEW ══════════ -->
+<hr class="sep" />
+<div class="section-sm">
+  <p class="section-label"><span class="lang-de">Was ist alles inklusive?</span><span class="lang-en">What Is Included?</span></p>
+  <h2 class="lang-de">Rundum-Sorglos-Paket</h2>
+  <h2 class="lang-en">All-Inclusive Package</h2>
+  <div class="divider"></div>
+  <div class="included-grid">
+    <div class="inc-item"><span class="inc-icon">🍳</span><span class="inc-text">
+      <strong><span class="lang-de">Alle Küchenutensilien</span><span class="lang-en">All Kitchen Utensils</span></strong>
+      <span class="lang-de">Töpfe, Pfannen, Geschirr, Besteck</span><span class="lang-en">Pots, pans, crockery, cutlery</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">🛋️</span><span class="inc-text">
+      <strong><span class="lang-de">Komplette Möblierung</span><span class="lang-en">Complete Furnishings</span></strong>
+      <span class="lang-de">Alle Möbel inklusive</span><span class="lang-en">All furniture included</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">👕</span><span class="inc-text">
+      <strong><span class="lang-de">Waschmaschine &amp; Trockner</span><span class="lang-en">Washer &amp; Dryer</span></strong>
+      <span class="lang-de">Im Bad – kein Kellergang</span><span class="lang-en">In bathroom – no basement trip</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">💡</span><span class="inc-text">
+      <strong><span class="lang-de">Strom</span><span class="lang-en">Electricity</span></strong>
+      <span class="lang-de">200 kWh/Monat inklusive</span><span class="lang-en">200 kWh/month included</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">🔥</span><span class="inc-text">
+      <strong><span class="lang-de">Heizung</span><span class="lang-en">Heating</span></strong>
+      <span class="lang-de">Vollständig inklusive</span><span class="lang-en">Fully included</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">💧</span><span class="inc-text">
+      <strong><span class="lang-de">Wasser (kalt &amp; warm)</span><span class="lang-en">Water (cold &amp; hot)</span></strong>
+      <span class="lang-de">Vollständig inklusive</span><span class="lang-en">Fully included</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">🌐</span><span class="inc-text">
+      <strong>1000 Mbit/s Internet</strong>
+      <span class="lang-de">Glasfaser inklusive</span><span class="lang-en">Fibre included</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">🧹</span><span class="inc-text">
+      <strong><span class="lang-de">Reinigung 1×/Monat</span><span class="lang-en">Cleaning 1×/month</span></strong>
+      <span class="lang-de">Flex. Terminvereinbarung</span><span class="lang-en">Flexible appointment</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">🅿️</span><span class="inc-text">
+      <strong><span class="lang-de">PKW-Stellplatz</span><span class="lang-en">Car Parking</span></strong>
+      <span class="lang-de">1 fester Parkplatz inklusive</span><span class="lang-en">1 dedicated space included</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">💼</span><span class="inc-text">
+      <strong><span class="lang-de">Höhenverstellbarer Tisch</span><span class="lang-en">Height-Adjustable Desk</span></strong>
+      <span class="lang-de">Ergonomisches Home Office</span><span class="lang-en">Ergonomic home office</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">🛁</span><span class="inc-text">
+      <strong><span class="lang-de">Walk-in-Dusche &amp; Bidet</span><span class="lang-en">Walk-in Shower &amp; Bidet</span></strong>
+      <span class="lang-de">In beiden Badezimmern</span><span class="lang-en">In both bathrooms</span>
+    </span></div>
+    <div class="inc-item"><span class="inc-icon">🏠</span><span class="inc-text">
+      <strong><span class="lang-de">Bosch Einbauküche</span><span class="lang-en">Bosch Built-in Kitchen</span></strong>
+      <span class="lang-de">Elegantes Design, top Geräte</span><span class="lang-en">Elegant design, top appliances</span>
+    </span></div>
+  </div>
+</div>
+
+<!-- ══════════ CONTACT ══════════ -->
+<div class="contact-band">
+  <div class="section">
+    <div>
+      <h2 class="lang-de">Interesse? Wir freuen uns auf Ihre Anfrage.</h2>
+      <h2 class="lang-en">Interested? We Look Forward to Hearing from You.</h2>
+      <p><span class="lang-de">Besichtigung nach Vereinbarung</span><span class="lang-en">Viewings by appointment</span> · Werastraße 24, 71088 Holzgerlingen</p>
+    </div>
+    <button class="contact-btn"><span class="lang-de">Jetzt anfragen</span><span class="lang-en">Enquire Now</span></button>
+  </div>
+</div>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <p><strong style="color:rgba(255,255,255,0.7)">Werastraße 24 · 71088 Holzgerlingen · Baden-Württemberg</strong></p>
+  <p>
+    <span class="lang-de">Vollmöbliertes Apartment · Einbauküche · 2 Badezimmer · Internet &amp; Nebenkosten inkl. · PKW-Stellplatz</span>
+    <span class="lang-en">Fully Furnished Apartment · Built-in Kitchen · 2 Bathrooms · Internet &amp; Utilities incl. · Car Parking</span>
+  </p>
+  <p style="margin-top:8px">
+    <span class="lang-de">Alle Angaben ohne Gewähr. Irrtümer und Änderungen vorbehalten.</span>
+    <span class="lang-en">All details without guarantee. Subject to errors and changes.</span>
+  </p>
+</footer>
+
+<script>
+  /* ── Language Toggle ── */
+  let currentLang = 'de';
+
+  function toggleLang() {
+    currentLang = currentLang === 'de' ? 'en' : 'de';
+    document.body.classList.toggle('en', currentLang === 'en');
+    document.getElementById('btn-de').classList.toggle('active', currentLang === 'de');
+    document.getElementById('btn-en').classList.toggle('active', currentLang === 'en');
+    document.documentElement.lang = currentLang;
+  }
+
+  /* ── Lightbox ── */
+  const galleryImgs = Array.from(document.querySelectorAll('#galleryGrid img'));
+  let current = 0;
+
+  galleryImgs.forEach((img, i) => {
+    img.addEventListener('click', () => openLightbox(i));
+  });
+
+  function openLightbox(index) {
+    current = index;
+    updateLightbox();
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function navigate(dir) {
+    current = (current + dir + galleryImgs.length) % galleryImgs.length;
+    updateLightbox();
+  }
+
+  function updateLightbox() {
+    const img = galleryImgs[current];
+    document.getElementById('lb-img').src = img.src;
+    document.getElementById('lb-img').alt = img.alt;
+    document.getElementById('lb-cur').textContent = current + 1;
+    document.getElementById('lb-total').textContent = galleryImgs.length;
+    document.getElementById('lb-caption').textContent = img.alt;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (!document.getElementById('lightbox').classList.contains('open')) return;
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); navigate(-1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); navigate(1);  }
+    if (e.key === 'Escape')     { closeLightbox(); }
+  });
+
+  /* Close on overlay click (not on image itself) */
+  document.getElementById('lightbox').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('lightbox')) closeLightbox();
+  });
+</script>
+
+</body>
+</html>
