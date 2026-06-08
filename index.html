@@ -271,6 +271,17 @@
     /* ── Separator ── */
     .sep { border: none; border-top: 1px solid #e8e4de; max-width: 1100px; margin: 0 auto; }
 
+    /* ── Electricity footnote ── */
+    .cost-footnote {
+      background: var(--mid);
+      color: rgba(255,255,255,0.45);
+      font-family: 'Arial', sans-serif;
+      font-size: 11px;
+      text-align: center;
+      padding: 10px 40px;
+      letter-spacing: 0.3px;
+    }
+
     /* ══════════ PRINT ══════════ */
     @media print {
       @page       { margin: 14mm 14mm; size: A4; }
@@ -476,20 +487,6 @@
     </div>
 
     <div class="feature-card">
-      <div class="fc-icon">🧹</div>
-      <div class="fc-title"><span class="lang-de">Monatliche Reinigung inklusive</span><span class="lang-en">Monthly Cleaning Included</span></div>
-      <div class="fc-desc lang-de">Einmal monatlich professionelle Reinigung – Terminvereinbarung flexibel nach Mieterwunsch.</div>
-      <div class="fc-desc lang-en">Professional cleaning once a month – appointment scheduled flexibly at the tenant's convenience.</div>
-    </div>
-
-    <div class="feature-card">
-      <div class="fc-icon">🅿️</div>
-      <div class="fc-title"><span class="lang-de">PKW-Stellplatz inklusive</span><span class="lang-en">Car Parking Included</span></div>
-      <div class="fc-desc lang-de">Ein fester Parkplatz direkt am Haus ist im Mietpreis enthalten – kein Stress mit der Parkplatzsuche.</div>
-      <div class="fc-desc lang-en">One dedicated parking space right at the building is included in the rent – no parking hassle.</div>
-    </div>
-
-    <div class="feature-card">
       <div class="fc-icon">🏘️</div>
       <div class="fc-title"><span class="lang-de">Ruhige Familienlage</span><span class="lang-en">Quiet Family Neighbourhood</span></div>
       <div class="fc-desc lang-de">Modernes Wohnhaus in ruhiger, familienfreundlicher Nachbarschaft. Grüne Umgebung, gute Gemeinschaft.</div>
@@ -512,13 +509,13 @@
       <div class="cost-icon">💧</div>
       <div class="cost-label"><span class="lang-de">Kalt- &amp; Warmwasser</span><span class="lang-en">Cold &amp; Hot Water</span></div>
       <div class="cost-value"><span class="lang-de">Inklusive</span><span class="lang-en">Included</span></div>
-      <div class="cost-note"><span class="lang-de">Unbegrenzt</span><span class="lang-en">Unlimited</span></div>
+      <div class="cost-note"><span class="lang-de">Im Mietpreis enthalten</span><span class="lang-en">Included in rent</span></div>
     </div>
     <div class="cost-item">
       <div class="cost-icon">💡</div>
       <div class="cost-label"><span class="lang-de">Strom</span><span class="lang-en">Electricity</span></div>
-      <div class="cost-value">200 kWh/<span class="lang-de">Monat</span><span class="lang-en">month</span></div>
-      <div class="cost-note"><span class="lang-de">Inklusive (Kontingent)</span><span class="lang-en">Included (allowance)</span></div>
+      <div class="cost-value"><span class="lang-de">Inklusive *</span><span class="lang-en">Included *</span></div>
+      <div class="cost-note"><span class="lang-de">Siehe Bedingungen</span><span class="lang-en">See conditions</span></div>
     </div>
     <div class="cost-item">
       <div class="cost-icon">🌐</div>
@@ -538,7 +535,29 @@
       <div class="cost-value"><span class="lang-de">Inklusive</span><span class="lang-en">Included</span></div>
       <div class="cost-note"><span class="lang-de">1 PKW-Platz</span><span class="lang-en">1 car space</span></div>
     </div>
+    <div class="cost-item">
+      <div class="cost-icon">🗑️</div>
+      <div class="cost-label"><span class="lang-de">Müllentsorgung</span><span class="lang-en">Waste Disposal</span></div>
+      <div class="cost-value"><span class="lang-de">Inklusive</span><span class="lang-en">Included</span></div>
+      <div class="cost-note"><span class="lang-de">Abfallentsorgung</span><span class="lang-en">Rubbish collection</span></div>
+    </div>
+    <div class="cost-item">
+      <div class="cost-icon">🏢</div>
+      <div class="cost-label"><span class="lang-de">Hausverwaltung</span><span class="lang-en">Building Mgmt.</span></div>
+      <div class="cost-value"><span class="lang-de">Inklusive</span><span class="lang-en">Included</span></div>
+      <div class="cost-note"><span class="lang-de">Gebäudeverwaltung</span><span class="lang-en">Property management</span></div>
+    </div>
+    <div class="cost-item">
+      <div class="cost-icon">🔑</div>
+      <div class="cost-label"><span class="lang-de">Keller</span><span class="lang-en">Basement</span></div>
+      <div class="cost-value"><span class="lang-de">Inklusive</span><span class="lang-en">Included</span></div>
+      <div class="cost-note"><span class="lang-de">Abstellraum / Lager</span><span class="lang-en">Storage room</span></div>
+    </div>
   </div>
+</div>
+<div class="cost-footnote">
+  <span class="lang-de">* Strom inklusive bis zu einem Verbrauch von 200 kWh pro Monat. Mehrverbrauch wird separat nach Verbrauch abgerechnet.</span>
+  <span class="lang-en">* Electricity included up to a fair-use allowance of 200 kWh per month. Excess consumption will be billed separately based on actual usage.</span>
 </div>
 
 <!-- ══════════ GALLERY ══════════ -->
@@ -655,65 +674,6 @@
         <li>Quiet residential street – perfect for families</li>
       </ul>
     </div>
-  </div>
-</div>
-
-<!-- ══════════ INCLUDED OVERVIEW ══════════ -->
-<hr class="sep" />
-<div class="section-sm">
-  <p class="section-label"><span class="lang-de">Was ist alles inklusive?</span><span class="lang-en">What Is Included?</span></p>
-  <h2 class="lang-de">Rundum-Sorglos-Paket</h2>
-  <h2 class="lang-en">All-Inclusive Package</h2>
-  <div class="divider"></div>
-  <div class="included-grid">
-    <div class="inc-item"><span class="inc-icon">🍳</span><span class="inc-text">
-      <strong><span class="lang-de">Alle Küchenutensilien</span><span class="lang-en">All Kitchen Utensils</span></strong>
-      <span class="lang-de">Töpfe, Pfannen, Geschirr, Besteck</span><span class="lang-en">Pots, pans, crockery, cutlery</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">🛋️</span><span class="inc-text">
-      <strong><span class="lang-de">Komplette Möblierung</span><span class="lang-en">Complete Furnishings</span></strong>
-      <span class="lang-de">Alle Möbel inklusive</span><span class="lang-en">All furniture included</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">👕</span><span class="inc-text">
-      <strong><span class="lang-de">Waschmaschine &amp; Trockner</span><span class="lang-en">Washer &amp; Dryer</span></strong>
-      <span class="lang-de">Im Bad – kein Kellergang</span><span class="lang-en">In bathroom – no basement trip</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">💡</span><span class="inc-text">
-      <strong><span class="lang-de">Strom</span><span class="lang-en">Electricity</span></strong>
-      <span class="lang-de">200 kWh/Monat inklusive</span><span class="lang-en">200 kWh/month included</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">🔥</span><span class="inc-text">
-      <strong><span class="lang-de">Heizung</span><span class="lang-en">Heating</span></strong>
-      <span class="lang-de">Vollständig inklusive</span><span class="lang-en">Fully included</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">💧</span><span class="inc-text">
-      <strong><span class="lang-de">Wasser (kalt &amp; warm)</span><span class="lang-en">Water (cold &amp; hot)</span></strong>
-      <span class="lang-de">Vollständig inklusive</span><span class="lang-en">Fully included</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">🌐</span><span class="inc-text">
-      <strong>1000 Mbit/s Internet</strong>
-      <span class="lang-de">Glasfaser inklusive</span><span class="lang-en">Fibre included</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">🧹</span><span class="inc-text">
-      <strong><span class="lang-de">Reinigung 1×/Monat</span><span class="lang-en">Cleaning 1×/month</span></strong>
-      <span class="lang-de">Flex. Terminvereinbarung</span><span class="lang-en">Flexible appointment</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">🅿️</span><span class="inc-text">
-      <strong><span class="lang-de">PKW-Stellplatz</span><span class="lang-en">Car Parking</span></strong>
-      <span class="lang-de">1 fester Parkplatz inklusive</span><span class="lang-en">1 dedicated space included</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">💼</span><span class="inc-text">
-      <strong><span class="lang-de">Höhenverstellbarer Tisch</span><span class="lang-en">Height-Adjustable Desk</span></strong>
-      <span class="lang-de">Ergonomisches Home Office</span><span class="lang-en">Ergonomic home office</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">🛁</span><span class="inc-text">
-      <strong><span class="lang-de">Walk-in-Dusche &amp; Bidet</span><span class="lang-en">Walk-in Shower &amp; Bidet</span></strong>
-      <span class="lang-de">In beiden Badezimmern</span><span class="lang-en">In both bathrooms</span>
-    </span></div>
-    <div class="inc-item"><span class="inc-icon">🏠</span><span class="inc-text">
-      <strong><span class="lang-de">Bosch Einbauküche</span><span class="lang-en">Bosch Built-in Kitchen</span></strong>
-      <span class="lang-de">Elegantes Design, top Geräte</span><span class="lang-en">Elegant design, top appliances</span>
-    </span></div>
   </div>
 </div>
 
