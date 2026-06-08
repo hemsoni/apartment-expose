@@ -333,6 +333,31 @@
       color: rgba(255,255,255,0.3); letter-spacing: 0.5px;
     }
 
+    /* ── PDF button ── */
+    .pdf-btn {
+      position: fixed;
+      top: 18px;
+      left: 22px;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(26,26,46,0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.8);
+      font-family: 'Arial', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      padding: 8px 14px;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .pdf-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .pdf-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    @media print { .pdf-btn { display: none !important; } }
+
     /* ── Electricity footnote ── */
     .cost-footnote {
       background: var(--mid);
@@ -361,6 +386,16 @@
   </style>
 </head>
 <body>
+
+<!-- ══════ PDF BUTTON ══════ -->
+<button class="pdf-btn" onclick="window.print()" aria-label="Save as PDF">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+    <line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/>
+  </svg>
+  <span class="lang-de">Als PDF speichern</span>
+  <span class="lang-en">Save as PDF</span>
+</button>
 
 <!-- ══════ LANGUAGE TOGGLE ══════ -->
 <button class="lang-toggle" onclick="toggleLang()" aria-label="Switch language">
