@@ -342,19 +342,20 @@
       display: flex;
       align-items: center;
       gap: 7px;
-      background: rgba(26,26,46,0.88);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: rgba(255,255,255,0.8);
+      background: var(--gold);
+      border: none;
+      color: var(--dark);
       font-family: 'Arial', sans-serif;
       font-size: 12px;
+      font-weight: bold;
       letter-spacing: 1.5px;
-      padding: 8px 14px;
+      padding: 9px 16px;
       cursor: pointer;
       border-radius: 3px;
-      transition: border-color 0.2s, color 0.2s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+      transition: opacity 0.2s;
     }
-    .pdf-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .pdf-btn:hover { opacity: 0.85; }
     .pdf-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
     @media print { .pdf-btn { display: none !important; } }
 
