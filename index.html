@@ -271,6 +271,68 @@
     /* ── Separator ── */
     .sep { border: none; border-top: 1px solid #e8e4de; max-width: 1100px; margin: 0 auto; }
 
+    /* ── Scroll animations ── */
+    .scroll-fade {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .scroll-fade.in-view { opacity: 1; transform: none; }
+
+    /* ── Google Maps button ── */
+    .map-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      background: rgba(201,168,76,0.12);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Arial', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+    .map-btn:hover { background: rgba(201,168,76,0.28); }
+    .map-btn .map-pin { font-size: 14px; }
+
+    /* ── Town panorama banner ── */
+    .town-panorama {
+      position: relative;
+      width: 100%;
+      height: 360px;
+      overflow: hidden;
+    }
+    .town-panorama img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center 40%;
+      display: block;
+    }
+    .town-panorama .pano-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(26,26,46,0.72) 0%, rgba(26,26,46,0.15) 55%);
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 32px 56px 24px;
+    }
+    .pano-title {
+      font-size: clamp(20px, 3vw, 34px);
+      color: var(--white); letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .pano-sub {
+      font-family: 'Arial', sans-serif; font-size: 13px;
+      color: rgba(255,255,255,0.6); letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+    .pano-credit {
+      font-family: 'Arial', sans-serif; font-size: 10px;
+      color: rgba(255,255,255,0.3); letter-spacing: 0.5px;
+    }
+
     /* ── Electricity footnote ── */
     .cost-footnote {
       background: var(--mid);
@@ -293,6 +355,7 @@
       .gallery-grid { grid-template-columns: repeat(3,1fr); gap: 6px; }
       .gallery-grid img { aspect-ratio: 4/3; transform: none !important; }
       .contact-band, .contact-btn, .lang-toggle, .lightbox { display: none !important; }
+      .scroll-fade { opacity: 1 !important; transform: none !important; }
       footer { page-break-inside: avoid; }
     }
   </style>
@@ -615,6 +678,11 @@
         <div class="addr-tag"><span class="lang-de">Adresse</span><span class="lang-en">Address</span></div>
         <div class="addr-main">Werastraße 24</div>
         <div class="addr-city">71088 Holzgerlingen · Baden-Württemberg</div>
+        <a class="map-btn" href="https://www.google.com/maps/search/?api=1&query=Werastra%C3%9Fe+24,71088+Holzgerlingen,Germany" target="_blank" rel="noopener noreferrer">
+          <span class="map-pin">📍</span>
+          <span class="lang-de">In Google Maps öffnen</span>
+          <span class="lang-en">Open in Google Maps</span>
+        </a>
         <div class="location-distance">
           <div class="dist-item">
             <span class="dist-icon">🚉</span>
@@ -674,6 +742,19 @@
         <li>Quiet residential street – perfect for families</li>
       </ul>
     </div>
+  </div>
+</div>
+
+<!-- ══════════ TOWN PANORAMA ══════════ -->
+<div class="town-panorama">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Holzgerlingen_-_panoramio.jpg"
+       alt="Holzgerlingen Panorama" loading="lazy" />
+  <div class="pano-overlay">
+    <div class="pano-title lang-de">Holzgerlingen – Ihr neues Zuhause</div>
+    <div class="pano-title lang-en">Holzgerlingen – Your New Home Town</div>
+    <div class="pano-sub lang-de">Ruhige Gemeinde · Landkreis Böblingen · Baden-Württemberg</div>
+    <div class="pano-sub lang-en">Quiet community · Böblingen District · Baden-Württemberg</div>
+    <div class="pano-credit">© qwesy qwesy, CC BY 3.0, Wikimedia Commons</div>
   </div>
 </div>
 
@@ -759,6 +840,41 @@
   document.getElementById('lightbox').addEventListener('click', (e) => {
     if (e.target === document.getElementById('lightbox')) closeLightbox();
   });
+
+  /* ── Scroll animations ── */
+  (function () {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+
+    /* Stagger children inside grid/list containers */
+    ['.features-grid', '.highlights .section', '.costs-band .section',
+     '.location-distance', '.nearby-list', '.gallery-grid'].forEach(sel => {
+      const parent = document.querySelector(sel);
+      if (!parent) return;
+      Array.from(parent.children).forEach((child, i) => {
+        child.style.transitionDelay = `${i * 0.07}s`;
+      });
+    });
+
+    /* Animate every meaningful element except the cover */
+    document.querySelectorAll(
+      '.hl-item, .feature-card, .cost-item, .dist-item, ' +
+      '.desc-text, .nearby-list li, .location-address, ' +
+      '.gallery-grid img, .section > h2, .section > .section-label, ' +
+      '.gallery > h2, .gallery > .section-label, .town-panorama'
+    ).forEach(el => {
+      if (!el.closest('.cover')) {
+        el.classList.add('scroll-fade');
+        observer.observe(el);
+      }
+    });
+  })();
 </script>
 
 </body>
