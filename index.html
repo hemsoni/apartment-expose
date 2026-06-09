@@ -263,7 +263,7 @@
     .contact-band .section { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; padding-top: 40px; padding-bottom: 40px; }
     .contact-band h2 { color: var(--dark); margin-bottom: 6px; }
     .contact-band p  { color: rgba(0,0,0,0.65); font-family: 'Arial', sans-serif; font-size: 14px; }
-    .contact-btn { background: var(--dark); color: var(--white); font-family: 'Arial', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; padding: 14px 36px; border: none; border-radius: 2px; cursor: pointer; white-space: nowrap; }
+    .contact-btn { display: inline-block; background: var(--dark); color: var(--white); font-family: 'Arial', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; padding: 14px 36px; border: none; border-radius: 2px; cursor: pointer; white-space: nowrap; text-decoration: none; }
 
     /* ── Footer ── */
     footer { background: var(--dark); color: rgba(255,255,255,0.45); font-family: 'Arial', sans-serif; font-size: 12px; text-align: center; padding: 24px 40px; line-height: 1.8; }
@@ -335,6 +335,7 @@
 
     /* ── PDF button ── */
     .pdf-btn {
+      display: none !important;
       position: fixed;
       top: 18px;
       left: 22px;
@@ -892,7 +893,7 @@
       <h2 class="lang-en">Interested? Contact Us for Availability &amp; Rental Details.</h2>
       <p><span class="lang-de">Kaltmiete und Verfügbarkeit auf Anfrage · Besichtigung nach Vereinbarung · Werastraße 24, 71088 Holzgerlingen</span><span class="lang-en">Rent and availability on request · Viewings by appointment · Werastraße 24, 71088 Holzgerlingen</span></p>
     </div>
-    <button class="contact-btn"><span class="lang-de">Jetzt anfragen</span><span class="lang-en">Enquire Now</span></button>
+    <a class="contact-btn" href="https://docs.google.com/forms/d/e/1FAIpQLSfq0sYs37DpTsny7PXujUf47xiGzyq68A6hhGdsnpRqq0LJDw/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer"><span class="lang-de">Jetzt anfragen</span><span class="lang-en">Enquire Now</span></a>
   </div>
 </div>
 
